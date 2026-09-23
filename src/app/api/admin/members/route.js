@@ -1,0 +1,15 @@
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { listAllMembers } from '@/lib/users';
+
+export async function GET() {
+  const session = await getServerSession(authOptions);
+  if (!session || session.user.role !== 'ADMIN') {
+    return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
+  }
+
+  const members = await listAllMembers();
+
+  return NextResponse.json({ members });
+}
